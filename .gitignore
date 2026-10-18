@@ -1,0 +1,40 @@
+# Ambientes e caches locais
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Configurações e credenciais locais
+.env
+.env.*
+!.env.example
+*.secret
+*.pem
+*.key
+
+# Arquivos temporários do Windows e ferramentas
+.tmp_test/
+.streamlit/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.pid
+Thumbs.db
+desktop.ini
+
+# Logs e saídas geradas localmente
+*.log
+work/
+outputs/
+
+# Transferência operacional entre ferramentas (não publicar)
+/docs/tcc/TRANSFERENCIA_IA_CONTROLADORA_TCC2.md
+/docs/tcc/PROMPT_REVISAO_IA_CONTROLADORA.md

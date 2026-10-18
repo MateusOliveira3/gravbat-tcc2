@@ -1,0 +1,3 @@
+# Interface V0.2; núcleo V0.1 continua usando somente biblioteca padrão.
+streamlit==1.64.0
+plotly==6.9.0
