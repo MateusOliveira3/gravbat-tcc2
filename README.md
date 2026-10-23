@@ -79,7 +79,6 @@ Para executar os testes:
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -v
 ```
 
-Na auditoria de **18/10/2026**, foram executados **74 testes: 73 passaram e um apresentou erro de permissão (`WinError 5`)** durante a limpeza de um diretório temporário no Windows. A verificação complementar com `verificar_dashboard.py` não foi concluída dentro do tempo da auditoria.
 
 ## Em que ponto está a pesquisa?
 
