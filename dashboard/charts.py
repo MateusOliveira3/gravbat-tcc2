@@ -27,6 +27,35 @@ def velocidade_tempo(estados):
     return estilo(fig, "Tempo (s)", "Velocidade (m/s)")
 
 
+def velocidade_tempo_marcada(estados, tempo_atual, velocidade_alvo=None, duracao_alvo_s=None):
+    """Curva pré-calculada com marcador do instante visual atual."""
+    fig = velocidade_tempo(estados)
+    if velocidade_alvo is not None:
+        fim = max(estados[-1].tempo_s if estados else 1.0, duracao_alvo_s or 0.0)
+        fig.add_scatter(x=[0, fim], y=[velocidade_alvo, velocidade_alvo],
+                        mode="lines", name="Velocidade-alvo (hipótese)",
+                        line=dict(color="#e2a84a", dash="dash"))
+    if estados:
+        atual = min(estados, key=lambda e: abs(e.tempo_s - tempo_atual))
+        fig.add_vline(x=atual.tempo_s, line_color="#3ac2a2", line_width=2)
+        fig.add_scatter(x=[atual.tempo_s], y=[atual.velocidade_m_s],
+                        mode="markers", name="Instante atual",
+                        marker=dict(size=10, color="#3ac2a2"))
+    fig.update_layout(height=420, paper_bgcolor="#0d1118", plot_bgcolor="#0d1118",
+                      font=dict(color="#dbe5f0"))
+    return fig
+
+
+def energia_posicao_marcada(estados, posicao_atual):
+    fig = energia_posicao(estados)
+    if estados:
+        atual = min(estados, key=lambda e: abs(e.posicao_m - posicao_atual))
+        fig.add_vline(x=atual.posicao_m, line_color="#3ac2a2", line_width=2)
+    fig.update_layout(height=420, paper_bgcolor="#0d1118", plot_bgcolor="#0d1118",
+                      font=dict(color="#dbe5f0"))
+    return fig
+
+
 def esquema_rampa(progresso, potencia_W=0.0):
     """Esquema didático compacto da rampa, massa e lâmpada."""
     p = max(0.0, min(1.0, progresso))

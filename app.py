@@ -2,10 +2,13 @@
 import math
 import time
 import streamlit as st
+import streamlit.components.v1 as components
 import config
 from simulation.simulator import simular
 from dashboard.scenarios import interpretar, numero, perda_percentual, varrer_inclinacao
 from dashboard import charts
+from dashboard.layout import animacao_interativa_html, svg_rampa_compacta
+from dashboard.application_metrics import (compatibilidade_autonomia, duracao_controlada_s, potencia_util_estimada)
 from model.transmission import cinematica
 from model.coupling import acoplar
 from model.motor_catalog import listar_motores, obter_motor
@@ -23,55 +26,73 @@ from simulation.electromechanical_dynamic import simular_descida_eletromecanica
 
 st.set_page_config(page_title="GravBat · Modelo científico", page_icon="↘", layout="wide")
 st.html("""<style>
+[data-testid="stAppViewContainer"] {background: #090b0f;}
+[data-testid="stHeader"] {background: #090b0f;}
+[data-testid="stMainBlockContainer"] {max-width: 1320px; padding-top: 1.2rem;}
+[data-testid="stMarkdownContainer"] p, [data-testid="stCaptionContainer"] p {color: #c7d1df;}
+[data-testid="stMetricLabel"] p {color: #b7c3d3 !important;}
+[data-testid="stMetricValue"] {color: #f4f7fb !important;}
+[data-testid="stButton"] button, [data-testid="stPopoverButton"] button {color: #eaf1f8; border-color: #39485c;}
+[data-testid="stAlert"] {border-color: #586779;}
+[data-testid="stAlert"] p {color: #eaf1f8;}
+[data-testid="stCaptionContainer"] {color: #9daabd;}
+[data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {color: #f4f7fb;}
+.gravbat-rampa {width: 100%; background: #0d1118; border: 1px solid #29384b; border-radius: 12px; padding: .4rem .6rem; box-sizing: border-box;}
+.gravbat-rampa svg {display: block; width: 100%; height: auto;}
+[data-testid="stVerticalBlockBorderWrapper"] {border-color: #29303b;}
+[data-testid="stMetric"] {padding: .2rem .35rem;}
 [data-testid="stMetricLabel"] p {white-space: normal;}
 [data-testid="stMetricValue"] {font-size: 1.15rem; white-space: normal; overflow-wrap: anywhere;}
 [data-testid="stVerticalBlockBorderWrapper"] {padding-top: .45rem; padding-bottom: .45rem;}
 [data-testid="stExpander"] {margin-top: .25rem; margin-bottom: .25rem;}
 </style>""")
 st.title("GravBat")
-st.caption("TCC-2 · Engenharia de Energia / UFSC · núcleo científico do modelo")
-st.info("Fluxo da análise: cenário → modelo mecânico → transmissão → conversão eletromecânica → ciclo → dimensionamento → verificação. Resultados calculados/simulados não constituem validação experimental.")
-modo_interface = st.radio("Visualização", ["Dashboard compacto", "Auditoria técnica"], horizontal=True, key="modo_interface")
+st.caption("Simulador de armazenamento gravitacional")
+st.markdown("**Modelo computacional**")
+col_param, col_menu = st.columns([1, 1])
+with col_param:
+    parametros_abertos = st.popover("⚙ Parâmetros")
+with col_menu:
+    menu_secundario = st.popover("⋯")
+    with menu_secundario:
+        auditoria_aberta = st.button("Auditoria técnica", key="abrir_auditoria")
+        if auditoria_aberta:
+            st.session_state["mostrar_auditoria"] = True
+if st.session_state.get("mostrar_auditoria", False):
+    if st.button("← Voltar ao resumo", key="voltar_resumo"):
+        st.session_state["mostrar_auditoria"] = False
+modo_interface = "Auditoria técnica" if st.session_state.get("mostrar_auditoria", False) else "Dashboard compacto"
+area_ativa = "Auditoria técnica" if modo_interface == "Auditoria técnica" else "Visão geral"
+if modo_interface == "Dashboard compacto":
+    st.html("<style>[data-testid='stSidebar'] {display: none;} [data-testid='stMainBlockContainer'] {max-width: 1320px; width: calc(100vw - 4rem); margin: 0 auto;} [data-testid='stPopover'] {background:#111720; color:#eaf1f8;} [data-testid='stPopover'] label, [data-testid='stPopover'] p {color:#dbe5f0 !important;} [data-testid='stPopover'] input {color:#f4f7fb !important; background:#1b2430;} [data-testid='stPopover'] button {color:#eaf1f8 !important; border-color:#4b5d72;}</style>")
+else:
+    st.html("<style>[data-testid='stSidebar'] {background:#111720;} [data-testid='stSidebar'] label, [data-testid='stSidebar'] p {color:#dbe5f0 !important;} [data-testid='stSidebar'] input {color:#f4f7fb !important; background:#1b2430;}</style>")
 
-with st.expander("Como ler esta versão", expanded=False):
-    st.markdown("""
-    **Objetivo desta versão:** verificar o comportamento mecânico e o acoplamento de uma carga genérica.
-
-    **Entradas:** parâmetros do cenário e hipóteses configuráveis na barra lateral.
-
-    **Resultados:** grandezas calculadas pelo modelo e trajetórias simuladas.
-
-    **Ainda não implementado:** gerador, retificador, eletrônica, controle e ciclo de subida.
-
-    **Classificação:** os resultados são identificados como calculados ou simulados; parâmetros sem medição são hipóteses.
-    """)
-
-painel_cenario = st.container(border=True)
+painel_cenario = st.container(border=(modo_interface == "Auditoria técnica"))
 with painel_cenario:
-    st.subheader("Cenário")
     if modo_interface == "Dashboard compacto":
-        st.subheader("Pergunta de aplicação")
-        pergunta = st.text_input("Descreva o que você quer estimar", value="Qual massa pode alimentar iluminação e Wi‑Fi por 4 horas?", key="pergunta_compacta_v2")
-        st.caption("A pergunta orienta os valores iniciais de dimensionamento. Depois, você pode editar qualquer variável para comparar cenários.")
-    modo_label = st.radio("Geometria", ["Laboratório · L fixo", "Aplicação · H fixo"], index=0 if modo_interface == "Auditoria técnica" else 1, key=f"modo_{modo_interface}")
-    modo = "laboratorio" if modo_label.startswith("Laboratório") else "terreno"
-    st.caption("HIPÓTESES / ENTRADAS · valores iniciais assumidos, não aferidos experimentalmente.")
-    config_cols = st.columns(4)
-    massa = config_cols[0].number_input("Massa (kg)", value=config.MASSA_KG, step=1.0, key="massa")
-    theta = config_cols[1].number_input("Inclinação (graus)", value=10.0, step=1.0, key="theta")
-    cr = config_cols[2].number_input("c_r · resistência equivalente", value=config.C_R, step=.01, format="%.4f", key="cr")
-    if modo == "laboratorio":
-        dimensao = {"L_m": config_cols[3].number_input("Comprimento L (m)", value=config.L_LAB_M, step=.1, key=f"L_{modo_interface}")}
+        pergunta = "Qual massa pode alimentar iluminação e Wi‑Fi por 4 horas?"
+    if parametros_abertos is not None:
+        with parametros_abertos:
+            st.caption("Entradas do cenário · hipóteses configuráveis")
+            modo_label = st.radio("Geometria", ["Laboratório · L fixo", "Aplicação · H fixo"], index=1, key="modo_parametros")
+            modo = "laboratorio" if modo_label.startswith("Laboratório") else "terreno"
+            massa = st.number_input("Massa (kg)", value=config.MASSA_KG, step=1.0, key="massa")
+            theta = st.number_input("Inclinação (graus)", value=10.0, step=1.0, key="theta")
+            cr = st.number_input("c_r · resistência equivalente", value=config.C_R, step=.01, format="%.4f", key="cr")
+            if modo == "laboratorio":
+                dimensao = {"L_m": st.number_input("Comprimento L (m)", value=config.L_LAB_M, step=.1, key="L_parametros")}
+            else:
+                dimensao = {"H_m": st.number_input("Desnível H (m)", value=config.H_TERRENO_M, step=.1, key="H_parametros")}
     else:
-        dimensao = {"H_m": config_cols[3].number_input("Desnível H (m)", value=config.H_TERRENO_M, step=.1, key=f"H_{modo_interface}")}
-    st.caption(f"g = {config.G_M_S2} m/s² · valor adotado. c_r é resistência em movimento, não atrito estático.")
-    st.caption("Domínio: massa e dimensão > 0; c_r ≥ 0; 0 < inclinação < 90°. Alterações recalculam o cenário e a varredura.")
+        modo = st.session_state.get("modo_parametros", "terreno")
+        modo = "laboratorio" if str(modo).startswith("Laboratório") else "terreno"
+        massa = st.session_state.get("massa", config.MASSA_KG)
+        theta = st.session_state.get("theta", 10.0)
+        cr = st.session_state.get("cr", config.C_R)
+        dimensao = {"L_m": st.session_state.get("L_parametros", config.L_LAB_M)} if modo == "laboratorio" else {"H_m": st.session_state.get("H_parametros", config.H_TERRENO_M)}
     altura_configurada = dimensao.get("H_m", dimensao.get("L_m", 0.0) * math.sin(math.radians(theta)))
     comprimento_configurado = dimensao.get("L_m", dimensao.get("H_m", 0.0) / math.sin(math.radians(theta)))
-    geometria_info = st.columns(3)
-    geometria_info[0].metric("Comprimento da rampa", numero(comprimento_configurado) + " m")
-    geometria_info[1].metric("Desnível vertical", numero(altura_configurada) + " m")
-    geometria_info[2].metric("Inclinação", numero(theta) + "°")
 
 with st.sidebar:
     st.header("Catálogo eletromecânico")
@@ -102,11 +123,106 @@ except (ValueError, OverflowError, ZeroDivisionError) as erro:
 
 final = estados[-1]
 if r.tempo_final_s is None:
-    st.warning("NAO_DESCE · Sob a aproximação de partida, o corpo permanece em repouso. Não há percurso nem perda por rolamento.")
+    if modo_interface == "Auditoria técnica":
+        st.warning("NAO_DESCE · Sob a aproximação de partida, o corpo permanece em repouso. Não há percurso nem perda por rolamento.")
 else:
-    st.success("DESCE · Movimento a partir do repouso, calculado até o fim da rampa, antes de colisão ou frenagem.")
+    if modo_interface == "Auditoria técnica":
+        st.success("DESCE · Movimento a partir do repouso, calculado até o fim da rampa, antes de colisão ou frenagem.")
 
-if modo_interface == "Auditoria técnica":
+if modo_interface == "Dashboard compacto":
+    st.markdown("### Cenário: plano inclinado")
+    energia_resumo = final.energia.inicial_J
+    velocidade_resumo = st.session_state.get("velocidade_pergunta", 0.02)
+    eficiencia_resumo = st.session_state.get("eficiencia_global_v1", 0.55)
+    potencia_resumo = potencia_util_estimada(massa, config.G_M_S2, velocidade_resumo, theta, eficiencia_resumo)
+    duracao_alvo_resumo = r.geometria.L_m / velocidade_resumo if velocidade_resumo > 0 else 0.0
+    resumo = st.columns(3)
+    resumo[0].metric("Energia potencial", numero(energia_resumo) + " J")
+    resumo[1].metric("Potência útil estimada", numero(potencia_resumo) + " W")
+    resumo[2].metric("Duração com velocidade-alvo", numero(duracao_alvo_resumo / 60.0) + " min")
+    resumo2 = st.columns(3)
+    resumo2[0].metric("Comprimento da rampa", numero(r.geometria.L_m) + " m")
+    resumo2[1].metric("Inclinação", numero(theta) + "°")
+    resumo2[2].metric("Massa", numero(massa) + " kg")
+    modo_movimento = st.radio("Trajetória", ["Descida livre", "Velocidade-alvo (hipótese)"], horizontal=True, key="modo_movimento_resumo")
+    # A reprodução é local ao navegador; o Python envia somente a trajetória.
+    progresso_resumo = 0.0
+    if modo_movimento == "Descida livre" and estados:
+        posicao_resumo = estados[-1].posicao_m if progresso_resumo > 0.9 else estados[0].posicao_m + progresso_resumo * r.geometria.L_m
+    else:
+        posicao_resumo = progresso_resumo * r.geometria.L_m
+    if modo_movimento == "Descida livre" and estados:
+        if progresso_resumo > 0.9:
+            estado_atual = estados[-1]
+        else:
+            estado_atual = estados[min(int(progresso_resumo * (len(estados) - 1)), len(estados) - 1)]
+        tempo_atual = estado_atual.tempo_s
+        velocidade_atual = estado_atual.velocidade_m_s
+        posicao_resumo = estado_atual.posicao_m
+    else:
+        tempo_atual = progresso_resumo * duracao_alvo_resumo
+        velocidade_atual = velocidade_resumo
+    componentes_modo = "alvo" if modo_movimento != "Descida livre" else "livre"
+    components.html(animacao_interativa_html(r.geometria.L_m, r.geometria.H_m, theta, estados, componentes_modo, velocidade_resumo, massa, cr), height=440, scrolling=False)
+    st.caption(f"{modo_movimento}. A reprodução ocorre localmente no navegador; a física é pré-calculada em Python.")
+    duracao_solicitada_resumo = st.session_state.get("duracao_pergunta_v3", 14400.0)
+    if duracao_alvo_resumo < duracao_solicitada_resumo:
+        st.warning(f"Autonomia não demonstrada. A descida com velocidade-alvo de {numero(velocidade_resumo)} m/s dura {numero(duracao_alvo_resumo / 60.0)} min; a demanda solicita {numero(duracao_solicitada_resumo / 3600.0)} h. A velocidade é uma hipótese cinemática, sem controle ativo validado; o escalonamento ainda não foi modelado.")
+    st.stop()
+
+# Áreas específicas usam renderização condicional para evitar carregar todos os
+# gráficos e diagnósticos quando o usuário está explorando apenas uma parte.
+if area_ativa == "Mecânica":
+    st.header("Mecânica")
+    st.caption("Resultados calculados do cenário e trajetória mecânica livre. A velocidade-alvo controlada permanece uma hipótese cinemática separada.")
+    mc = st.columns(4)
+    mc[0].metric("Energia potencial", numero(final.energia.inicial_J) + " J")
+    mc[1].metric("Força gravitacional", numero(r.forcas.grav_paralela_N) + " N")
+    mc[2].metric("Resistência ao rolamento", numero(r.forcas.rol_movimento_N) + " N")
+    mc[3].metric("Aceleração", numero(r.forcas.aceleracao_m_s2) + " m/s²")
+    md = st.columns(4)
+    md[0].metric("Comprimento", numero(r.geometria.L_m) + " m")
+    md[1].metric("Desnível", numero(r.geometria.H_m) + " m")
+    md[2].metric("Tempo de descida", numero(r.tempo_final_s) + " s" if r.tempo_final_s is not None else "Não aplicável")
+    md[3].metric("Velocidade final", numero(final.velocidade_m_s) + " m/s")
+    curva_mecanica = st.selectbox("Curva mecânica", ["Energia ao longo da rampa", "Velocidade ao longo do tempo"], key="curva_mecanica_area")
+    if curva_mecanica == "Energia ao longo da rampa":
+        st.plotly_chart(charts.energia_posicao(estados), width="stretch", key="energia_mecanica_area", config={"displaylogo": False})
+    else:
+        st.plotly_chart(charts.velocidade_tempo(estados), width="stretch", key="velocidade_mecanica_area", config={"displaylogo": False})
+    st.info("A curva acima é a descida livre mecânica. A trajetória a velocidade-alvo constante é uma hipótese cinemática e não um controlador validado.")
+    st.stop()
+
+if area_ativa == "Transmissão":
+    st.header("Transmissão")
+    st.caption("Parâmetros de cabo, tambor e transmissão disponíveis no cenário atual. Elementos de controle ativo, inércia detalhada e raio variável por camadas ainda não estão modelados.")
+    tc = st.columns(4)
+    tc[0].metric("Cabo", cabo.tipo)
+    tc[1].metric("Diâmetro do cabo", numero(cabo.diametro_cabo_m) + " m")
+    tc[2].metric("Núcleo do tambor", numero(cabo.diametro_nucleo_m) + " m")
+    tc[3].metric("Comprimento de cabo", numero(cabo.comprimento_disponivel_m) + " m")
+    st.info("A referência cinemática sem carga permanece separada do torque resistente e da conversão eletromecânica.")
+    with st.expander("Elementos ainda não modelados", expanded=True):
+        st.markdown("- variação do raio por camadas de enrolamento\n- inércia detalhada do tambor\n- perdas de engrenagens dependentes da carga\n- controle ativo de velocidade")
+    st.stop()
+
+if area_ativa == "Aplicação":
+    st.header("Aplicação")
+    st.caption("Dimensionamento energético de ordem de grandeza. A eficiência global é uma hipótese configurável; não representa eficiência medida.")
+    ac = st.columns(4)
+    energia_area = ac[0].number_input("Energia solicitada (Wh)", value=400.0, min_value=0.001, step=10.0, key="energia_aplicacao_area")
+    duracao_area = ac[1].number_input("Duração solicitada (h)", value=4.0, min_value=0.001, step=0.5, key="duracao_aplicacao_area")
+    potencia_area = ac[2].metric("Potência média solicitada", numero(energia_area / duracao_area) + " W")
+    ac[3].metric("Energia potencial do cenário", numero(final.energia.inicial_J / 3600.0) + " Wh")
+    duracao_cenario = r.tempo_final_s if r.tempo_final_s is not None else 0.0
+    if duracao_cenario < duracao_area * 3600.0:
+        st.warning(f"AUTONOMIA NÃO COMPATÍVEL: a descida de um módulo dura {numero(duracao_cenario)} s, enquanto a aplicação solicita {numero(duracao_area * 3600.0)} s. A configuração atual não demonstra atendimento contínuo; escalonamento de módulos não foi modelado.")
+    else:
+        st.success("A duração mecânica do cenário cobre a duração solicitada sob estas hipóteses.")
+    st.caption("A comparação acima não implementa uma arquitetura modular nem demonstra atendimento contínuo. Ela apenas confronta as durações informadas.")
+    st.stop()
+
+if modo_interface == "Auditoria técnica" and area_ativa == "Auditoria técnica":
     metricas = [
     ("Desnível H", numero(r.geometria.H_m) + " m"),
     ("Comprimento L", numero(r.geometria.L_m) + " m"),
@@ -153,10 +269,12 @@ if modo_interface == "Dashboard compacto":
         massa_modulo = massa
         massa_banco = massa_modulo * modulos
         energia_banco_Wh = massa_banco * config.G_M_S2 * altura_pergunta * eficiencia_global / 3600.0
-        potencia_banco_W = massa_banco * config.G_M_S2 * velocidade_pergunta * eficiencia_global
+        potencia_banco_W = potencia_util_estimada(massa_banco, config.G_M_S2, velocidade_pergunta, theta, eficiencia_global)
         modulos_requeridos = math.ceil(resultado_inverso["massa_requerida_kg"] / massa_modulo)
         energia_excedente_Wh = excedente_W * duracao_excedente_h
         modulos_curtailment = math.ceil(energia_excedente_Wh / max(energia_banco_Wh / modulos, 1e-12)) if excedente_W > 0 else 0
+        duracao_descida_controlada_s = duracao_controlada_s(r.geometria.L_m, velocidade_pergunta)
+        compatibilidade = compatibilidade_autonomia(energia_pergunta, duracao_pergunta, duracao_descida_controlada_s)
         ri = st.columns(4)
         ri[0].metric("Massa requerida · aplicação", numero(resultado_inverso["massa_requerida_kg"]) + " kg")
         ri[1].metric("Massa limitada pela energia", numero(resultado_inverso["massa_por_energia_kg"]) + " kg")
@@ -166,7 +284,7 @@ if modo_interface == "Dashboard compacto":
         rb = st.columns(4)
         rb[0].metric("Massa do banco", numero(massa_banco) + " kg")
         rb[1].metric("Energia do banco", numero(energia_banco_Wh) + " Wh")
-        rb[2].metric("Potência do banco", numero(potencia_banco_W) + " W")
+        rb[2].metric("Potência útil estimada do banco", numero(potencia_banco_W) + " W")
         rb[3].metric("Módulos para atender demanda", numero(modulos_requeridos))
         if resultado_inverso.get("status") == "DADOS_INSUFICIENTES":
             st.warning("DADOS_INSUFICIENTES: a potência de projeto excede a potência média, mas não foi informada a duração do pico. O número de módulos abaixo é apenas referência de energia/potência média; o atendimento do pico não está declarado.")
@@ -176,9 +294,11 @@ if modo_interface == "Dashboard compacto":
         rc[2].metric("Potência de carga do evento", numero(excedente_W) + " W")
         if perfil_operacao == "Controle solar/eólico":
             st.success("Leitura do serviço: o banco é avaliado como absorvedor de excedente renovável. O resultado indica quantos módulos seriam necessários para deslocar esse evento sem tratá-lo como alimentação contínua de uma residência.")
+        if not compatibilidade["atende_duracao"]:
+            st.warning(f"AUTONOMIA NÃO COMPATÍVEL: a descida de um módulo dura {numero(duracao_descida_controlada_s)} s, enquanto a aplicação solicita {numero(duracao_pergunta)} s. A configuração atual não demonstra atendimento contínuo por quatro horas. O escalonamento de módulos é apenas uma possibilidade teórica e não foi modelado; nenhuma outra arquitetura é descartada.")
         if resultado_inverso["potencia_media_W"] > potencia_pergunta:
             st.warning(f"A energia e a duração informadas implicam potência média de {numero(resultado_inverso['potencia_media_W'])} W, acima da potência máxima informada de {numero(potencia_pergunta)} W. Aumente a duração ou revise a energia do evento.")
-        st.info(f"Perfil **{perfil_operacao}**: o banco configurado com {numero(modulos)} módulos de {numero(massa_modulo)} kg entrega aproximadamente {numero(energia_banco_Wh)} Wh e {numero(potencia_banco_W)} W. Para a demanda parametrizada, o modelo estima {numero(modulos_requeridos)} módulos equivalentes.")
+        st.info(f"Perfil **{perfil_operacao}**: o banco configurado com {numero(modulos)} módulos de {numero(massa_modulo)} kg tem aproximadamente {numero(energia_banco_Wh)} Wh de energia potencial e {numero(potencia_banco_W)} W de potência útil estimada. Para a demanda parametrizada, o modelo estima {numero(modulos_requeridos)} módulos equivalentes.")
         if "resid" in pergunta.lower() and energia_pergunta <= 100.0:
             st.warning("A pergunta menciona uma residência, mas a energia útil ainda está no valor genérico de 100 Wh. Edite esse campo para o consumo que deseja representar; o modelo não inventa o consumo residencial a partir do texto.")
         massa_pico_ui = resultado_inverso.get("massa_por_potencia_pico_kg", resultado_inverso["massa_por_potencia_kg"])
@@ -201,7 +321,7 @@ if modo_interface == "Dashboard compacto":
             estado_animacao = estados[indice_animacao]
             progresso_animacao = 1.0 - (estado_animacao.posicao_m / r.geometria.L_m if r.geometria.L_m else 0.0)
             massa_aplicacao = resultado_inverso["massa_requerida_kg"]
-            potencia_animacao = massa_aplicacao * config.G_M_S2 * velocidade_pergunta * eficiencia_global
+            potencia_animacao = potencia_util_estimada(massa_aplicacao, config.G_M_S2, velocidade_pergunta, theta, eficiencia_global)
             tempo_controlado = estado_animacao.posicao_m / velocidade_pergunta if velocidade_pergunta > 0 else estado_animacao.tempo_s
             energia_restante_aplicacao = massa_aplicacao * config.G_M_S2 * max(r.geometria.L_m - estado_animacao.posicao_m, 0.0) * math.sin(math.radians(theta)) * eficiencia_global
             with painel_animacao.container():
@@ -210,25 +330,28 @@ if modo_interface == "Dashboard compacto":
                 am = st.columns(4)
                 am[0].metric("Posição", numero(estado_animacao.posicao_m) + " m")
                 am[1].metric("Energia útil restante", numero(energia_restante_aplicacao / 3600.0) + " Wh")
-                am[2].metric("Velocidade controlada", numero(velocidade_pergunta) + " m/s")
+                am[2].metric("Velocidade-alvo (hipótese)", numero(velocidade_pergunta) + " m/s")
                 am[3].metric("Tempo da descida", numero(tempo_controlado) + " s")
             time.sleep(0.035)
         indice = len(estados) - 1
     estado_visual = estados[indice]
     progresso_visual = 1.0 - (estado_visual.posicao_m / r.geometria.L_m if r.geometria.L_m else 0.0)
     massa_aplicacao = resultado_inverso["massa_requerida_kg"]
-    potencia_visual = massa_aplicacao * config.G_M_S2 * velocidade_pergunta * eficiencia_global
+    potencia_visual = potencia_util_estimada(massa_aplicacao, config.G_M_S2, velocidade_pergunta, theta, eficiencia_global)
     energia_restante_visual = massa_aplicacao * config.G_M_S2 * max(r.geometria.L_m - estado_visual.posicao_m, 0.0) * math.sin(math.radians(theta)) * eficiencia_global
     if not executar:
+        st.caption("Trajetória exibida: hipótese cinemática de descida a velocidade-alvo constante; não representa um controlador validado. A curva de energia abaixo pertence separadamente à descida livre mecânica.")
         st.plotly_chart(charts.esquema_rampa(progresso_visual, potencia_visual), width="stretch", key="esquema_rampa_compacto", config={"displaylogo": False})
         cv = st.columns(5)
         cv[0].metric("Posição", numero(estado_visual.posicao_m) + " m")
         cv[1].metric("Energia útil restante", numero(energia_restante_visual / 3600.0) + " Wh")
-        cv[2].metric("Velocidade controlada", numero(velocidade_pergunta) + " m/s")
+        cv[2].metric("Velocidade-alvo (hipótese)", numero(velocidade_pergunta) + " m/s")
         cv[3].metric("Tempo da descida", numero(estado_visual.posicao_m / velocidade_pergunta) + " s")
-        cv[4].metric("Potência instantânea", numero(potencia_visual) + " W")
+        cv[4].metric("Potência útil estimada da aplicação", numero(potencia_visual) + " W")
     if r.tempo_final_s is not None:
         st.caption(f"Referência mecânica da rampa: {numero(r.tempo_final_s)} s. A referência histórica de 50 s do TCC-1 é um benchmark didático, não um requisito imposto ao modelo.")
+    st.markdown("**Trajetória mecânica livre (sem controle de velocidade)**")
+    st.caption("Esta curva usa a aceleração calculada por gravidade e rolamento para a massa do cenário; não representa a animação controlada nem a potência de referência da aplicação.")
     curva = st.selectbox("Curva principal", ["Energia ao longo da rampa", "Velocidade ao longo do tempo"], key="curva_compacta")
     if curva == "Energia ao longo da rampa":
         st.plotly_chart(charts.energia_posicao(estados), width="stretch", key="curva_compacta_energia", config={"displaylogo": False, "scrollZoom": False})

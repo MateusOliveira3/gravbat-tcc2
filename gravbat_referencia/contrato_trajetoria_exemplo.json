@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "source": "EXEMPLO DIDATICO - NAO E RESULTADO E1-E5",
+    "model_classification": "free_mechanical_simplified",
+    "notes": "Amostras ilustrativas; substituir por dados do simulador Python."
+  },
+  "geometry": {
+    "L_m": 1.2,
+    "H_m": 0.2083778132,
+    "theta_deg": 10,
+    "travel_start_m": 0,
+    "travel_end_m": 1.2
+  },
+  "mechanical": {
+    "mass_kg": 6,
+    "rolling_coefficient": 0.02,
+    "drum_radius_m": 0.05,
+    "gear_ratio": 5,
+    "efficiency_hypothesis": 0.55
+  },
+  "trajectory": {
+    "mode": "free",
+    "samples": [
+      {"t_s": 0, "s_m": 0, "v_track_m_s": 0},
+      {"t_s": 0.5, "s_m": 0.1888, "v_track_m_s": 0.7551},
+      {"t_s": 1, "s_m": 0.7551, "v_track_m_s": 1.5103},
+      {"t_s": 1.2606, "s_m": 1.2, "v_track_m_s": 1.9040}
+    ]
+  }
+}

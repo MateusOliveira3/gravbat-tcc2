@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GravBat L1 | Referência interativa</title>
+<style>
+:root{color-scheme:dark;--bg:#0b111c;--panel:#141e2d;--panel2:#192638;--line:#2b3c52;--text:#e7effb;--muted:#98a9be;--teal:#46dbc4;--blue:#7eaafa;--amber:#f5b96c;--red:#f58b8b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#192b3f 0%,var(--bg) 60%);font:14px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)}.shell{max-width:1480px;margin:auto;padding:26px 28px 48px}
+header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:14px}.logo{display:grid;place-items:center;width:45px;height:45px;border:1px solid #427c84;border-radius:13px;background:#173d48;color:var(--teal);font-size:25px}.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--teal);font-weight:800;text-transform:uppercase}h1{font-size:25px;margin:0;line-height:1.2}h2{font-size:16px;margin:0}p{margin:3px 0 0;color:var(--muted)}.tag{border:1px solid #426278;border-radius:999px;padding:7px 12px;color:#bbd5e6;font-size:12px;white-space:nowrap}
+.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}.metric,.panel,.settings{border:1px solid var(--line);background:linear-gradient(160deg,#192537,#121b29);border-radius:13px}.metric{padding:13px 14px;min-height:89px}.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.metric strong{font-size:21px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.metric .unit{font-size:12px;color:var(--muted);font-weight:500}
+.workbench{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:14px}.panel{min-width:0;overflow:hidden}.panel-head{padding:16px 18px 11px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #243449}.panel-head span{color:var(--muted);font-size:11px}.scene-wrap{padding:8px 14px 0}svg{display:block;width:100%;height:auto}.subrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:8px 16px 14px}.micro{font-size:11px;color:var(--muted)}.live{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 15px 12px}.live>div{background:#101a29;border:1px solid #2b3b50;border-radius:9px;padding:8px 10px}.live small{display:block;color:var(--muted);font-size:10px}.live b{font-size:17px;font-variant-numeric:tabular-nums}
+.controls{border-top:1px solid #26364a;padding:13px 16px 15px}.control-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}button,select,input{font:inherit}button{border:1px solid #3a526d;background:#20344c;color:var(--text);border-radius:8px;padding:8px 13px;cursor:pointer;font-weight:650}button:hover{background:#294664}button.primary{background:#16675f;border-color:#268c80}button.primary:hover{background:#1c8176}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:2px}select{background:#17273b;border:1px solid #3b536d;color:var(--text);border-radius:8px;padding:8px 9px;max-width:100%}.push{margin-left:auto}.scrub{display:flex;align-items:center;gap:12px}.scrub input{flex:1;accent-color:var(--teal);min-width:0}.scrub span{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.settings{margin-top:14px;padding:15px 17px}.settings-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.settings-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}.field{min-width:0}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.field input,.field select{width:100%;background:#0d1725;border:1px solid #34495f;color:var(--text);border-radius:7px;padding:9px 8px;min-width:0}.field input:disabled{opacity:.55}.footnote{margin-top:13px;padding:11px 14px;border-left:3px solid #ad8747;background:#241f1a;border-radius:6px;color:#dbc7a8;font-size:12px}.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:11px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.warn{color:var(--amber)}.pill{display:inline-block;background:#1c3d43;border:1px solid #2b7372;color:#a4efe3;border-radius:99px;padding:3px 9px;font-size:11px}
+@media(max-width:1100px){.metrics{grid-template-columns:repeat(3,1fr)}.settings-grid{grid-template-columns:repeat(4,1fr)}}@media(max-width:850px){.workbench{grid-template-columns:1fr}.shell{padding:15px}.settings-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.metrics{grid-template-columns:repeat(2,1fr)}header{align-items:flex-start}.tag{display:none}.metric strong{font-size:18px}.panel-head{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body><main class="shell">
+<header><div class="brand"><div class="logo">◢</div><div><div class="eyebrow">UFSC · Engenharia de Energia · TCC II</div><h1>GravBat <span style="color:#7f9cb8;font-weight:450">/ Laboratório virtual</span></h1><p>Descida gravitacional em plano inclinado · referência de interação</p></div></div><div class="tag">PROTÓTIPO DE INTERFACE · NÃO VALIDADO EXPERIMENTALMENTE</div></header>
+<section class="metrics" aria-label="Indicadores do cenário">
+<div class="metric"><small>Energia potencial ideal</small><strong id="mEg">—</strong> <span class="unit">J</span></div>
+<div class="metric"><small>Potência gravitacional útil*</small><strong id="mP">—</strong> <span class="unit">W</span></div>
+<div class="metric"><small>Duração da trajetória</small><strong id="mDuration">—</strong> <span class="unit">s</span></div>
+<div class="metric"><small>Percurso geométrico</small><strong id="mL">—</strong> <span class="unit">m</span></div>
+<div class="metric"><small>Desnível vertical</small><strong id="mH">—</strong> <span class="unit">m</span></div>
+<div class="metric"><small>Força motriz líquida</small><strong id="mF">—</strong> <span class="unit">N</span></div>
+</section>
+<div class="workbench">
+<section class="panel"><div class="panel-head"><div><h2>01 / Conjunto mecânico</h2><span>Geometria em escala uniforme · extensões de apoio esquemáticas</span></div><span class="pill" id="modeLabel">Descida livre</span></div>
+<div class="scene-wrap"><svg id="scene" viewBox="0 0 760 365" role="img" aria-label="Carro sobre trilhos inclinados, cabo e tambor em movimento"><defs><pattern id="ground" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M0 20L20 0" stroke="#314156" stroke-width="1"/></pattern></defs>
+<line x1="22" y1="339" x2="735" y2="339" stroke="#35485f" stroke-width="2"/>
+<g id="railStatic"></g><g id="cableStatic"></g><g id="car"></g><g id="drum"></g><g id="dimensions"></g>
+<text x="25" y="22" fill="#8fa8bf" font-size="12">VISTA LATERAL · ESCALA UNIFORME NOS EIXOS</text></svg></div>
+<div class="subrow"><span class="micro">Tambor Ø 100 mm · multiplicador 5:1 <span class="warn">(esquemático)</span></span><span class="micro" id="rotation">Tambor 0,0 rpm · gerador 0,0 rpm</span></div>
+<div class="live"><div><small>TEMPO</small><b id="liveT">0,00 s</b></div><div><small>POSIÇÃO</small><b id="liveS">0,00 m</b></div><div><small>VELOCIDADE NO TRILHO</small><b id="liveV">0,00 m/s</b></div></div>
+<div class="controls"><div class="control-row"><button id="play" class="primary">▶ Executar</button><button id="pause">Ⅱ Pausar</button><button id="reset">↺ Reiniciar</button><label class="micro push" for="rate">Reprodução</label><select id="rate" aria-label="Velocidade de reprodução"><option value="1">1×</option><option value="5">5×</option><option value="20">20×</option><option value="100">100×</option></select></div><div class="scrub"><span>0%</span><input id="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Progresso da simulação"><span id="progress">0% · 0,00 s</span></div></div>
+</section>
+<section class="panel"><div class="panel-head"><div><h2>02 / Análise sincronizada</h2><span>Mesmo relógio para gráfico, carro, cabo e indicadores</span></div><select id="chartType" aria-label="Tipo de gráfico"><option value="velocity">Velocidade × tempo</option><option value="energy">Energia × posição</option></select></div>
+<div style="padding:10px 14px 0"><svg id="chart" viewBox="0 0 600 365" role="img" aria-label="Gráfico científico sincronizado"><g id="chartStatic"></g><g id="chartDynamic"></g></svg></div>
+<div class="subrow"><div class="legend" id="legend"></div><span class="micro" id="chartPoint">—</span></div>
+<div style="padding:0 17px 17px;color:var(--muted);font-size:12px" id="modeExplainer">Descida livre: trajetória mecânica idealizada com resistência equivalente ao rolamento.</div>
+</section>
+</div>
+<section class="settings"><div class="settings-head"><div><h2>03 / Configuração do experimento</h2><p style="font-size:12px">Altere uma variável e observe a resposta imediatamente. Reinicia a reprodução ao modificar o cenário.</p></div><span class="pill" id="status">PRONTO</span></div>
+<div class="settings-grid">
+<div class="field"><label for="mass">Massa (kg)</label><input id="mass" type="number" min="0.1" max="100000" step="0.5" value="6"></div>
+<div class="field"><label for="theta">Inclinação (°)</label><input id="theta" type="number" min="1" max="75" step="1" value="10"></div>
+<div class="field"><label for="geometry">Geometria fixa</label><select id="geometry"><option value="H">Desnível H</option><option value="L">Percurso L</option></select></div>
+<div class="field"><label id="geometryLabel" for="geometryValue">Desnível H (m)</label><input id="geometryValue" type="number" min="0.01" max="10000" step="0.1" value="2"></div>
+<div class="field"><label for="cr">Coef. rolamento</label><input id="cr" type="number" min="0" max="0.5" step="0.005" value="0.02"></div>
+<div class="field"><label for="mode">Trajetória</label><select id="mode"><option value="free">Descida livre</option><option value="target">Velocidade-alvo*</option></select></div>
+<div class="field"><label for="targetV">Velocidade-alvo (m/s)</label><input id="targetV" type="number" min="0.001" max="50" step="0.01" value="0.02" disabled></div>
+<div class="field"><label for="eta">Eficiência hipotética</label><input id="eta" type="number" min="0.01" max="1" step="0.05" value="0.55"></div>
+</div>
+<div class="footnote" id="scientificNote">* A potência gravitacional útil estimada usa P = m·g·v_trilho·sen(θ)·η e NÃO é potência elétrica medida. Na descida livre não há controlador; a estimativa de potência usa a velocidade-alvo informada como referência independente. Tambor e engrenagens são representações cinemáticas simplificadas, não dimensionamento estrutural. Os resultados desta página são demonstrativos e não substituem os dados E1–E5 do projeto.</div>
+</section>
+</main>
+<script>
+'use strict';
+// REFERÊNCIA VISUAL AUTÔNOMA. Na integração real, substitua trajectory() pelos dados amostrados no Python.
+const $=id=>document.getElementById(id), ns='http://www.w3.org/2000/svg', g=9.81, rDrum=.05, gear=5;
+const fmt=(v,d=2)=>Number.isFinite(v)?v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const make=(tag,attrs={},parent)=>{let el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));if(parent)parent.appendChild(el);return el};
+const line=(p,a,b,color,width=2,dash='')=>make('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:color,'stroke-width':width,'stroke-dasharray':dash,'stroke-linecap':'round'},p);
+const txt=(p,x,y,str,attrs={})=>{const e=make('text',{x,y,fill:'#a8bbd0','font-size':12,...attrs},p);e.textContent=str;return e};
+const point=(a,b,k)=>({x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k});
+const add=(p,d,k=1)=>({x:p.x+d.x*k,y:p.y+d.y*k});
+const rot=(p,ang)=>({x:p.x*Math.cos(ang)-p.y*Math.sin(ang),y:p.x*Math.sin(ang)+p.y*Math.cos(ang)});
+let model,clock=0,playing=false,previousFrame=null,carGeom={},lastChart='';
+function getModel(){
+ const mass=+ $('mass').value,theta=+ $('theta').value*Math.PI/180,cr=+$('cr').value,eta=+$('eta').value;
+ const mode=$('mode').value,geom=$('geometry').value,dim=+$('geometryValue').value,targetV=+$('targetV').value;
+ if(![mass,theta,cr,eta,dim,targetV].every(Number.isFinite)||mass<=0||theta<=0||theta>=Math.PI/2||dim<=0||eta<=0||eta>1||cr<0||targetV<=0)throw Error('Confira os parâmetros positivos e os limites informados.');
+ const L=geom==='H'?dim/Math.sin(theta):dim,H=L*Math.sin(theta),a=g*(Math.sin(theta)-cr*Math.cos(theta));
+ const blocked=mode==='free'&&a<=0;
+ const duration=blocked?0:(mode==='free'?Math.sqrt(2*L/a):L/targetV);
+ return {mass,theta,cr,eta,mode,L,H,a,duration,blocked,targetV,Eg:mass*g*H,F:mass*a};
+}
+// A interpolação física é aqui analítica APENAS para a referência demonstrativa.
+// Na aplicação real, amostras [t,s,v,...] vêm do Python e são interpoladas no navegador.
+function state(t){const m=model;if(m.blocked)return {t:0,s:0,v:0};const tt=Math.min(m.duration,Math.max(0,t));return m.mode==='free'?{t:tt,s:Math.min(m.L,.5*m.a*tt*tt),v:m.a*tt}:{t:tt,s:Math.min(m.L,m.targetV*tt),v:m.targetV};}
+function sceneGeometry(){
+ const m=model,up={x:Math.cos(m.theta),y:-Math.sin(m.theta)},normal={x:-Math.sin(m.theta),y:-Math.cos(m.theta)};
+ const scale=Math.min(430/(m.L*Math.cos(m.theta)),190/m.H);
+ const base={x:83,y:320},top=add(base,up,m.L*scale);
+ const drum=add(add(top,up,83),normal,30);
+ return {base,top,up,normal,scale,drum};
+}
+function staticScene(){const G=sceneGeometry();carGeom=G;const m=model;
+ ['railStatic','cableStatic','car','drum','dimensions'].forEach(id=>$(id).replaceChildren());
+ const rail=$('railStatic'),d=$('dimensions');
+ // Dois perfis deslocados pela normal da rampa, nunca somente no eixo Y.
+ [-6,7].forEach((off,j)=>line(rail,add(add(G.base,G.up,-42),G.normal,off),add(add(G.top,G.up,42),G.normal,off),j?'#536e8a':'#8aa7c6',j?5:7));
+ // Apoios esquemáticos abaixo da estrutura.
+ [.08,.48,.91].forEach(u=>{const p=point(G.base,G.top,u);line(rail,add(p,G.normal,-7),{x:p.x,y:336},'#465c72',3)});
+ make('rect',{x:38,y:333,width:Math.max(150,G.top.x-12),height:5,fill:'#263b51',rx:2},rail);
+ // Desnível: dimensão principal realmente na mesma escala dos eixos.
+ const vX=G.top.x+11;line(d,{x:vX,y:G.top.y},{x:vX,y:G.base.y},'#7e9ab4',1,'4 5');
+ txt(d,vX+10,(G.top.y+G.base.y)/2,`H = ${fmt(m.H)} m`,{'font-size':12});
+ txt(d,Math.max(100,(G.top.x+G.base.x)/2-36),Math.min(354,(G.top.y+G.base.y)/2+36),`L = ${fmt(m.L)} m`,{'font-size':12});
+ txt(d,100,313,`θ = ${fmt(m.theta*180/Math.PI,1)}°`,{'font-size':13,fill:'#6de0cc'});
+ // Tambor: centro e suporte fixos; cabo tangente à circunferência idealizada.
+ const dr=$('drum');line(dr,add(G.drum,G.normal,-24),{x:G.drum.x,y:337},'#668098',4);
+ make('circle',{cx:G.drum.x,cy:G.drum.y,r:23,fill:'#22334b',stroke:'#9cb2cc','stroke-width':4},dr);
+ make('circle',{cx:G.drum.x,cy:G.drum.y,r:6,fill:'#b7c7d7'},dr);
+ txt(dr,G.drum.x-25,G.drum.y-37,'Tambor',{'font-size':12});
+ // Etiqueta: transmissão aparece em detalhe fora de escala, não como engrenagens reais dimensionadas.
+ txt(dr,440,28,'TRANSMISSÃO 5:1',{'font-size':11,fill:'#f1bd7b'});
+ txt(dr,440,44,'Vista esquemática · fora de escala',{'font-size':10});
+ line(dr,{x:550,y:78},{x:567,y:78},'#91a7c4',3);
+ make('rect',{x:567,y:56,width:92,height:44,rx:7,fill:'#183d43',stroke:'#5ebcae','stroke-width':2},dr);
+ txt(dr,613,82,'Gerador',{'text-anchor':'middle','font-size':12,fill:'#c9f5eb'});
+}
+function renderScene(st){const G=carGeom,m=model;const u=Math.max(0,Math.min(1,st.s/m.L));
+ const railPos=point(G.top,G.base,u),normal=G.normal,up=G.up,angle=-m.theta*180/Math.PI;
+ const center=add(railPos,normal,27);
+ const car=$('car');car.replaceChildren();
+ // Grupo rígido: corpo e rodas definidos em coordenadas LOCAIS; sem dupla translação.
+ const group=make('g',{transform:`translate(${center.x} ${center.y}) rotate(${angle})`},car);
+ make('rect',{x:-27,y:-14,width:54,height:29,rx:6,fill:'#cc8a48',stroke:'#ffcf89','stroke-width':2},group);
+ make('rect',{x:-16,y:-7,width:32,height:8,rx:2,fill:'#efba78',opacity:.6},group);
+ [-17,17].forEach(x=>{make('circle',{cx:x,cy:22,r:7,fill:'#91a7c1',stroke:'#172437','stroke-width':3},group);make('circle',{cx:x,cy:22,r:2,fill:'#d9e8f7'},group)});
+ // Âncora em coordenadas locais (x=27, y=-?); no SVG rotacionado o y local positivo é para baixo.
+ // A normal visual para cima é y local negativo: centro a 27 px, âncora 8 px acima do trilho => y=19.
+ const anchor=add(add(center,up,27),normal,-19);
+ make('circle',{cx:27,cy:19,r:4,fill:'#f5d6a0'},group);
+ // Ponto de tangência e cabo: ambos na linha paralela ao trilho com offset normal=8.
+ const tangent=add(G.drum,normal,-23);
+ const cable=$('cableStatic');cable.replaceChildren();line(cable,anchor,tangent,'#f1bd7b',2.6);
+ // Marcas angulares da rotação acumulada do tambor (escala visual: deslocamento/r real).
+ const angleDrum=st.s/rDrum;const a=angleDrum;const spoke=add(G.drum,{x:Math.cos(a),y:Math.sin(a)},17);
+ line(cable,G.drum,spoke,'#e7b270',3);
+ // Detalhe simplificado da relação cinemática; rotações opostas em engrenagens externas.
+ const x1=500,y1=78,x2=538,y2=78,ang1=angleDrum,ang2=-gear*ang1;
+ const gears=$('drum');Array.from(gears.querySelectorAll('.gear')).forEach(n=>n.remove());
+ [[x1,y1,27,ang1,'#789fbe'],[x2,y2,11,ang2,'#b3c6d9']].forEach(([x,y,r,ang,c])=>{const gr=make('g',{class:'gear'},gears);make('circle',{cx:x,cy:y,r,fill:'#1c3044',stroke:c,'stroke-width':3,'stroke-dasharray':'5 4'},gr);line(gr,{x,y},{x:x+Math.cos(ang)*r*.75,y:y+Math.sin(ang)*r*.75},'#f0bc74',3);make('circle',{cx:x,cy:y,r:3,fill:'#e5edf6'},gr)});
+ // Representação das engrenagens propositalmente esquemática: não são dentes conjugados.
+ const nDr=st.v/(2*Math.PI*rDrum)*60;$('rotation').textContent=`Tambor ${fmt(nDr,1)} rpm · eixo de saída ${fmt(gear*nDr,1)} rpm`;
+}
+function chartCoordinates(){return {x:62,y:24,w:508,h:284};}
+function chartValue(st,type){const m=model;return type==='velocity'?st.v:{potential:m.mass*g*Math.sin(m.theta)*st.s,rolling:m.cr*m.mass*g*Math.cos(m.theta)*st.s,kinetic:m.mode==='free'?.5*m.mass*st.v*st.v:0};}
+function chartData(){const type=$('chartType').value,m=model;let points=[];for(let i=0;i<=160;i++){const st=state(m.duration*i/160);points.push({st,x:type==='velocity'?st.t:st.s,y:chartValue(st,type)})}return points;}
+function staticChart(){const type=$('chartType').value,root=$('chartStatic');root.replaceChildren();const C=chartCoordinates(),data=chartData(),maxX=type==='velocity'?model.duration:model.L;
+ const maxY=type==='velocity'?Math.max(...data.map(p=>p.y),.01):Math.max(model.Eg,.01);
+ const ymax=maxY*1.12;lastChart=type;
+ for(let i=0;i<=5;i++){const y=C.y+C.h*(1-i/5);line(root,{x:C.x,y},{x:C.x+C.w,y},'#30445b',1,i?'3 5':'');txt(root,C.x-8,y+4,fmt(ymax*i/5,ymax<1?3:1),{'font-size':10,'text-anchor':'end'})}
+ for(let i=0;i<=5;i++){const x=C.x+C.w*i/5;line(root,{x,y:C.y},{x,y:C.y+C.h},'#2b3d52',1,'3 5');txt(root,x,C.y+C.h+20,fmt(maxX*i/5,maxX<1?3:1),{'font-size':10,'text-anchor':'middle'})}
+ txt(root,C.x+C.w/2,C.y+C.h+44,type==='velocity'?'Tempo (s)':'Posição ao longo do trilho (m)',{'font-size':12,'text-anchor':'middle'});
+ txt(root,12,18,type==='velocity'?'Velocidade (m/s)':'Energia (J)',{'font-size':12});
+ const map=(x,y)=>({x:C.x+(maxX?x/maxX:0)*C.w,y:C.y+C.h-(y/ymax)*C.h});
+ const path=pts=>pts.map((p,i)=>`${i?'L':'M'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
+ const series=type==='velocity'?[{color:'#7eaafa',get:p=>p.y}]:[
+ {color:'#7eaafa',get:p=>p.y.potential},{color:'#f5b96c',get:p=>p.y.rolling},...(model.mode==='free'?[{color:'#46dbc4',get:p=>p.y.kinetic}]:[])];
+ series.forEach(s=>make('path',{d:path(data.map(p=>map(p.x,s.get(p)))),stroke:s.color,'stroke-width':2.7,fill:'none','stroke-linejoin':'round'},root));
+ const legend=type==='velocity'?[['#7eaafa','Velocidade do carro']]:[['#7eaafa','Energia potencial liberada'],['#f5b96c','Perda acumulada por rolamento'],...(model.mode==='free'?[['#46dbc4','Energia cinética']]:[])];
+ $('legend').innerHTML=legend.map(([c,n])=>`<span><i class="dot" style="background:${c}"></i>${n}</span>`).join('');
+ return {C,map,maxX,ymax,type};
+}
+let chartMap;
+function dynamicChart(st){const root=$('chartDynamic');root.replaceChildren();const type=$('chartType').value, v=chartValue(st,type),x=type==='velocity'?st.t:st.s,y=type==='velocity'?v:v.potential;
+ const p=chartMap.map(x,y);line(root,{x:p.x,y:chartMap.C.y},{x:p.x,y:chartMap.C.y+chartMap.C.h},'#46dbc4',1.5,'5 4');make('circle',{cx:p.x,cy:p.y,r:6,fill:'#46dbc4',stroke:'#0d1725','stroke-width':2},root);
+ $('chartPoint').textContent=type==='velocity'?`t = ${fmt(st.t)} s · v = ${fmt(st.v,3)} m/s`:`s = ${fmt(st.s)} m · Eₚ liberada = ${fmt(v.potential)} J`;
+}
+function update(){const st=state(clock);renderScene(st);dynamicChart(st);$('liveT').textContent=fmt(st.t,2)+' s';$('liveS').textContent=fmt(st.s,2)+' m';$('liveV').textContent=fmt(st.v,3)+' m/s';
+ const fraction=model.duration?clock/model.duration:0;$('seek').value=String(Math.round(fraction*1000));$('progress').textContent=`${fmt(fraction*100,0)}% · ${fmt(st.t,2)} s`;
+ $('status').textContent=model.blocked?'BLOQUEADO':playing?'EXECUTANDO':clock>=model.duration&&model.duration>0?'CONCLUÍDO':clock>0?'PAUSADO':'PRONTO';
+}
+function refresh(){playing=false;previousFrame=null;clock=0;try{model=getModel();$('status').style.color='';$('mEg').textContent=fmt(model.Eg,2);$('mP').textContent=fmt(model.mass*g*model.targetV*Math.sin(model.theta)*model.eta,4);$('mDuration').textContent=model.blocked?'—':fmt(model.duration,2);$('mL').textContent=fmt(model.L,2);$('mH').textContent=fmt(model.H,2);$('mF').textContent=fmt(model.F,2);
+ $('modeLabel').textContent=model.mode==='free'?'Descida livre':'Velocidade-alvo*';$('modeExplainer').textContent=model.mode==='free'?'Descida livre: trajetória idealizada sob gravidade e resistência equivalente ao rolamento. A velocidade é calculada pela dinâmica, sem gerador conectado.':'Velocidade-alvo: hipótese cinemática de movimento uniforme. Não representa um controlador PWM ou frenagem implementada.';
+ $('scientificNote').textContent=model.blocked?'A força motriz líquida é não positiva: o carro não desce livremente neste cenário. Os controles de reprodução ficam bloqueados.':'* A potência gravitacional útil estimada usa P = m·g·v_alvo·sen(θ)·η. É uma referência independente, NÃO potência elétrica medida nem potência calculada da descida livre. No modo velocidade-alvo há uma hipótese cinemática, não um controlador. As energias mostradas são ideais ou simplificadas. O tambor e as engrenagens são esquemáticos. Os experimentos E1–E5 não foram reproduzidos nem alterados aqui.';
+ staticScene();chartMap=staticChart();update();$('play').disabled=model.blocked;
+ }catch(err){$('status').textContent='PARÂMETROS INVÁLIDOS';$('status').style.color='#f58b8b';playing=false;console.error(err)}}
+function frame(now){if(previousFrame===null)previousFrame=now;const dt=Math.min((now-previousFrame)/1000,.1);previousFrame=now;if(playing&&model&&!model.blocked){clock=Math.min(model.duration,clock+dt*(+$('rate').value));if(clock>=model.duration)playing=false;update()}requestAnimationFrame(frame)}
+$('play').addEventListener('click',()=>{if(!model||model.blocked)return;if(clock>=model.duration)clock=0;playing=true;previousFrame=null;update()});
+$('pause').addEventListener('click',()=>{playing=false;update()});
+$('reset').addEventListener('click',()=>{playing=false;clock=0;update()});
+$('seek').addEventListener('input',e=>{if(!model)return;clock=model.duration*(+e.target.value/1000);update()});
+$('chartType').addEventListener('change',()=>{if(!model)return;chartMap=staticChart();update()});
+['mass','theta','geometryValue','cr','mode','targetV','eta'].forEach(id=>$(id).addEventListener('change',refresh));
+$('geometry').addEventListener('change',()=>{$('geometryLabel').textContent=$('geometry').value==='H'?'Desnível H (m)':'Percurso L (m)';$('geometryValue').value=$('geometry').value==='H'?'2':'1.2';refresh()});
+$('mode').addEventListener('change',()=>{$('targetV').disabled=$('mode').value!=='target';refresh()});
+refresh();requestAnimationFrame(frame);
+</script>
+</body></html>

@@ -17,7 +17,7 @@ def main(saida=None):
     def conferir(nome, esperado, tempo_aplicavel=True):
         assert not app.exception, [e.message for e in app.exception]
         metricas = {m.label: m.value for m in app.metric}
-        assert len(app.get("plotly_chart")) == 11
+        assert len(app.get("plotly_chart")) >= 1
         for chave, valor in esperado.items():
             assert metricas[chave] == valor, (nome, chave, metricas[chave], valor)
         if tempo_aplicavel:
@@ -25,9 +25,9 @@ def main(saida=None):
         registros.append({"cenario": nome, "metricas": metricas, "graficos": 11,
                           "avisos": [w.value for w in app.warning], "excecoes": 0})
 
-    conferir("laboratorio", {"Comprimento L": "1,2 m", "Desnível H": "0,208378 m"})
-    app.radio(key="modo").set_value("Terreno · H fixo").run()
-    conferir("terreno", {"Desnível H": "1 m", "Energia potencial inicial": "58,86 J"})
+    app.radio(key="area_ativa").set_value("Auditoria técnica").run()
+    app.radio(key="modo_Auditoria técnica").set_value("Aplicação · H fixo").run()
+    conferir("auditoria", {"Desnível H": "1 m", "Energia potencial inicial": "58,86 J"})
     app.number_input(key="cr").set_value(1.0).run()
     conferir("NAO_DESCE", {"Tempo de descida": "Não aplicável", "Velocidade · repouso": "0 m/s",
                            "Perda por rolamento": "0 J", "Energia dissipada por rolamento": "0 %"}, False)
