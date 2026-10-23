@@ -1,0 +1,10 @@
+id,referencia,doi,grupo,fonte_oficial,status_acesso,arquivo_pdf,idioma,licenca,sha256,observacao
+REF-001,"Qin, Zhou, Guo, Sheng, Xu, Zuo, Li, Chen (2023)",10.19799/j.cnki.2095-4239.2022.0634,02_inclinado,https://doi.org/10.19799/j.cnki.2095-4239.2022.0634,metadados_confirmados,,, , ,Estudo de eficiência ferroviária; sem transferência de resultados sem texto integral.
+REF-002,"Zhang, Lin, Qiu, Xiao (2024)",10.19799/j.cnki.2095-4239.2023.0667,02_inclinado,https://doi.org/10.19799/j.cnki.2095-4239.2023.0667,metadados_confirmados,,, , ,Arquiteturas de rampa e montanha; texto integral pendente.
+REF-003,"Morstyn; Chilcott; McCulloch (2019)",10.1016/j.apenergy.2019.01.226,01_vertical,https://ora.ox.ac.uk/objects/uuid%3A0482b2fa-f51b-4276-a369-8892cb5095c4,metadados_e_resumo_confirmados,,en,Termos ORA a conferir,,Manuscrito aceito listado no repositório; download não realizado.
+REF-004,"Liu, Mou, Shi, Chen, Wang, Luo, Zhong, Chen (2024)",10.19799/j.cnki.2095-4239.2024.0243,02_inclinado,https://esst.cip.com.cn/CN/10.19799/j.cnki.2095-4239.2024.0243,texto_html_consultado,,, , ,Página oficial inclui resumo, tabela de parâmetros e figuras.
+REF-005,"Qiu et al. (2024)",10.19799/j.cnki.2095-4239.2023.0789,01_vertical,https://doi.org/10.19799/j.cnki.2095-4239.2023.0789,metadados_confirmados,,, , ,Texto integral pendente.
+REF-006,"Tong et al. (2022)",10.1016/j.egyr.2022.10.286,04_revisoes,https://doi.org/10.1016/j.egyr.2022.10.286,metadados_a_confirmar,,, , ,Acesso integral pendente.
+REF-007,"Lin et al. (2025)",10.26599/JIC.2025.9180101,03_modelagem,https://doi.org/10.26599/JIC.2025.9180101,metadados_a_confirmar,,, , ,Acesso integral pendente.
+REF-008,"Hunt et al. (2020)",10.1016/j.energy.2019.116419,05_aplicacoes,https://doi.org/10.1016/j.energy.2019.116419,metadados_a_confirmar,,, , ,Acesso integral pendente.
+REF-009,"Wang et al. (2025)",10.3390/en18071812,04_revisoes,https://doi.org/10.3390/en18071812,html_publico,,, , ,Página pública localizada; licença e PDF local pendentes.
